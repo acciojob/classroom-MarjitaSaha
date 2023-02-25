@@ -11,9 +11,9 @@ public class StudentRepository {
    private Map<String,List<String>> db3 ;
    StudentRepository()
    {
-       this.db1=new HashMap<>();
-       this.db2=new HashMap<>();
-       this.db3=new HashMap<>();
+       this.db1=new HashMap<String,Student>();
+       this.db2=new HashMap<String,Teacher>();
+       this.db3=new HashMap<String,List<String>>();
    }
    public void addStudent(Student student)
    {
@@ -25,8 +25,10 @@ public class StudentRepository {
    }
    public void addStudTeacher(String student, String teacher)
    {
-      if(db1.containsKey(teacher) && db2.containsKey(student))
+      if(db1.containsKey(student) && db2.containsKey(teacher))
       {
+          db1.put(student,db1.get(student));
+          db2.put(teacher,db2.get(teacher));
           List<String> teacher_student = new ArrayList<>();
           if(db3.containsKey(teacher)) teacher_student=db3.get(teacher);
          teacher_student.add(student);
@@ -43,7 +45,10 @@ public class StudentRepository {
     }
     public List<String> getNamesofStud(String teachername)
     {
-        return db3.get(teachername);
+        List<String> studNames= new ArrayList<>();
+        if(db3.containsKey(teachername))
+            studNames=db3.get(teachername);
+        return studNames;
     }
    public List<String> getAllStuds()
    {
@@ -56,16 +61,18 @@ public class StudentRepository {
    }
    public void deleteATeacher(String teacher)
    {
+       List<String> student = new ArrayList<>();
+
        if(db3.containsKey(teacher))
        {
-           List<String> stu = new ArrayList<>();
-           stu=db3.get(teacher);
-           for(String s:stu)
+           student=db3.get(teacher);
+           for(String s:student)
            {
                if(db1.containsKey(s)) db1.remove(s);
            }
-           db2.remove(teacher);
+           db3.remove(teacher);
        }
+       if(db2.containsKey(teacher)) db2.remove(teacher);
    }
     public void deleteAllTeacher()
     {
@@ -73,6 +80,7 @@ public class StudentRepository {
         for (String  teacher: db3.keySet())
         {
             for (String stud : db3.get(teacher)) studSet.add(stud);
+            db3.remove(teacher);
         }
 
         for (String stud : studSet)
